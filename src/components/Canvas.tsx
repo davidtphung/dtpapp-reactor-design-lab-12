@@ -1,4 +1,3 @@
-
 import React, { useRef, useState, useEffect } from 'react';
 import { useAppContext } from '../context/AppContext';
 import { Canvas as ThreeCanvas, useThree } from '@react-three/fiber';
@@ -254,7 +253,7 @@ const Canvas: React.FC = () => {
       toast({
         title: "Reactor Complete!",
         description: `Your ${plantType === 'traditional' ? 'Traditional Reactor' : 'SMR'} is now fully assembled.`,
-        variant: "success"
+        variant: "default" // Changed from "success" to "default"
       });
       
       setTimeout(() => setShowCompletionMessage(false), 5000);
