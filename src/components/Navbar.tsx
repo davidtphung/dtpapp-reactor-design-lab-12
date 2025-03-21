@@ -14,10 +14,10 @@ const Navbar: React.FC = () => {
         <div className="flex items-center space-x-2">
           <Atom className="h-6 w-6 text-nuclear" />
           <span className="hidden text-xl font-semibold tracking-tight sm:inline-block">
-            <span className="nuclear-text">Designing the Components of Nuclear Power</span>
+            <span className="nuclear-text">Putting Together the Components of Nuclear Energy</span>
           </span>
           <span className="text-xl font-semibold tracking-tight sm:hidden">
-            <span className="nuclear-text">Nuclear Power</span>
+            <span className="nuclear-text">Nuclear Energy</span>
           </span>
         </div>
         

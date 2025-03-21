@@ -1,10 +1,12 @@
+
 import React, { useRef, useState, useEffect } from 'react';
 import { useAppContext } from '../context/AppContext';
 import { Canvas as ThreeCanvas, useThree } from '@react-three/fiber';
 import { OrbitControls, PerspectiveCamera, Environment } from '@react-three/drei';
-import { Cylinder, Box, CircleIcon } from 'lucide-react';
+import { Cylinder, Box, CircleIcon, Info } from 'lucide-react';
 import { Vector3 } from 'three';
 import { toast } from "@/components/ui/use-toast";
+import { Button } from "@/components/ui/button";
 
 // Component to represent a reactor core
 const ReactorCore = ({ position = [0, 0, 0], scale = 1 }) => {
@@ -262,6 +264,119 @@ const SecondaryLoopSystem = ({ position = [0, 0, 0], scale = 1 }) => {
   );
 };
 
+// Additional components for expert level
+const NeutronModerator = ({ position = [0, 0, 0], scale = 1 }) => {
+  return (
+    <group position={[position[0], position[1], position[2]]} scale={scale}>
+      <mesh castShadow>
+        <cylinderGeometry args={[0.5, 0.5, 0.8, 24]} />
+        <meshStandardMaterial color="#4ade80" metalness={0.4} roughness={0.6} />
+      </mesh>
+      <mesh position={[0, 0.5, 0]} castShadow>
+        <sphereGeometry args={[0.3, 24, 24]} />
+        <meshStandardMaterial color="#22c55e" metalness={0.5} roughness={0.5} />
+      </mesh>
+    </group>
+  );
+};
+
+const ReactorInstrumentation = ({ position = [0, 0, 0], scale = 1 }) => {
+  return (
+    <group position={[position[0], position[1], position[2]]} scale={scale}>
+      <mesh castShadow>
+        <boxGeometry args={[0.8, 0.4, 0.6]} />
+        <meshStandardMaterial color="#64748b" metalness={0.7} roughness={0.3} />
+      </mesh>
+      {/* Displays */}
+      {[-0.2, 0.2].map((x, i) => (
+        <mesh key={`display-${i}`} position={[x, 0.25, 0]} castShadow>
+          <boxGeometry args={[0.2, 0.1, 0.4]} />
+          <meshStandardMaterial color="#0ea5e9" metalness={0.8} roughness={0.2} emissive="#0ea5e9" emissiveIntensity={0.5} />
+        </mesh>
+      ))}
+    </group>
+  );
+};
+
+const EmergencyCooling = ({ position = [0, 0, 0], scale = 1 }) => {
+  return (
+    <group position={[position[0], position[1], position[2]]} scale={scale}>
+      <mesh castShadow>
+        <cylinderGeometry args={[0.4, 0.4, 0.9, 24]} />
+        <meshStandardMaterial color="#0369a1" metalness={0.6} roughness={0.4} />
+      </mesh>
+      <mesh position={[0, 0.6, 0]} castShadow>
+        <boxGeometry args={[0.7, 0.3, 0.7]} />
+        <meshStandardMaterial color="#0284c7" metalness={0.5} roughness={0.5} />
+      </mesh>
+      {/* Pipes */}
+      {[-0.3, 0.3].map((x, i) => (
+        <mesh key={`pipe-${i}`} position={[x, 0.3, 0]} rotation={[0, 0, Math.PI / 2]} castShadow>
+          <cylinderGeometry args={[0.05, 0.05, 0.4, 12]} />
+          <meshStandardMaterial color="#38bdf8" metalness={0.7} roughness={0.3} />
+        </mesh>
+      ))}
+    </group>
+  );
+};
+
+const FuelManagement = ({ position = [0, 0, 0], scale = 1 }) => {
+  return (
+    <group position={[position[0], position[1], position[2]]} scale={scale}>
+      <mesh castShadow>
+        <boxGeometry args={[1.1, 0.4, 0.8]} />
+        <meshStandardMaterial color="#475569" metalness={0.5} roughness={0.5} />
+      </mesh>
+      {/* Grid pattern */}
+      {[-0.3, 0, 0.3].map((x, i) => 
+        [-0.2, 0.2].map((z, j) => (
+          <mesh key={`grid-${i}-${j}`} position={[x, 0.25, z]} castShadow>
+            <boxGeometry args={[0.2, 0.1, 0.2]} />
+            <meshStandardMaterial color="#f59e0b" metalness={0.6} roughness={0.4} />
+          </mesh>
+        ))
+      )}
+    </group>
+  );
+};
+
+const ThermalExchange = ({ position = [0, 0, 0], scale = 1 }) => {
+  return (
+    <group position={[position[0], position[1], position[2]]} scale={scale}>
+      <mesh castShadow>
+        <boxGeometry args={[1.0, 0.6, 0.6]} />
+        <meshStandardMaterial color="#9ca3af" metalness={0.7} roughness={0.3} />
+      </mesh>
+      {/* Heat exchanger fins */}
+      {Array.from({ length: 5 }).map((_, i) => (
+        <mesh key={`fin-${i}`} position={[i * 0.2 - 0.4, 0, 0]} castShadow>
+          <boxGeometry args={[0.05, 0.8, 0.5]} />
+          <meshStandardMaterial color="#d1d5db" metalness={0.8} roughness={0.2} />
+        </mesh>
+      ))}
+    </group>
+  );
+};
+
+const ContainmentStructure = ({ position = [0, 0, 0], scale = 1 }) => {
+  return (
+    <group position={[position[0], position[1], position[2]]} scale={scale}>
+      <mesh castShadow>
+        <cylinderGeometry args={[1.2, 1.2, 2.0, 32]} />
+        <meshStandardMaterial color="#94a3b8" metalness={0.3} roughness={0.7} />
+      </mesh>
+      <mesh position={[0, 1.2, 0]} castShadow>
+        <cylinderGeometry args={[0.8, 1.2, 0.4, 32]} />
+        <meshStandardMaterial color="#94a3b8" metalness={0.3} roughness={0.7} />
+      </mesh>
+      <mesh position={[0, 1.5, 0]} castShadow>
+        <sphereGeometry args={[0.8, 32, 32, 0, Math.PI]} />
+        <meshStandardMaterial color="#94a3b8" metalness={0.3} roughness={0.7} />
+      </mesh>
+    </group>
+  );
+};
+
 // For novice components
 const ReactorVessel = ({ position = [0, 0, 0], scale = 1 }) => {
   return (
@@ -338,7 +453,7 @@ const TurbineGenerator = ({ position = [0, 0, 0], scale = 1 }) => {
 };
 
 // Dynamic reactor model based on placed components
-const DynamicReactorModel = ({ placedComponents }) => {
+const DynamicReactorModel = ({ placedComponents, missingComponents, userMode }) => {
   return (
     <group>
       <Floor />
@@ -374,7 +489,7 @@ const DynamicReactorModel = ({ placedComponents }) => {
           case 'turbine-generator':
             return <TurbineGenerator key={index} position={position} scale={scale || 1} />;
             
-          // Knowledge/Expert components
+          // Knowledge components
           case 'pressure-vessel':
             return <PressureVessel key={index} position={position} scale={scale || 1} />;
           case 'fuel-assemblies':
@@ -385,6 +500,20 @@ const DynamicReactorModel = ({ placedComponents }) => {
             return <PrimaryCoolantLoop key={index} position={position} scale={scale || 1} />;
           case 'secondary-loop-system':
             return <SecondaryLoopSystem key={index} position={position} scale={scale || 1} />;
+          case 'containment-structure':
+            return <ContainmentStructure key={index} position={position} scale={scale || 1} />;
+            
+          // Expert components
+          case 'neutron-moderator':
+            return <NeutronModerator key={index} position={position} scale={scale || 1} />;
+          case 'reactor-instrumentation':
+            return <ReactorInstrumentation key={index} position={position} scale={scale || 1} />;
+          case 'emergency-cooling':
+            return <EmergencyCooling key={index} position={position} scale={scale || 1} />;
+          case 'fuel-management':
+            return <FuelManagement key={index} position={position} scale={scale || 1} />;
+          case 'thermal-exchange':
+            return <ThermalExchange key={index} position={position} scale={scale || 1} />;
             
           default:
             console.log("Unknown component type:", type);
@@ -401,6 +530,8 @@ const Canvas: React.FC = () => {
   const [indicatorPosition, setIndicatorPosition] = useState([0, 0, 0]);
   const [placedComponents, setPlacedComponents] = useState([]);
   const [showCompletionMessage, setShowCompletionMessage] = useState(false);
+  const [missingComponents, setMissingComponents] = useState<string[]>([]);
+  const [showMissingComponentInfo, setShowMissingComponentInfo] = useState(false);
 
   // Handles component placement
   const handlePlaceComponent = (position) => {
@@ -412,7 +543,8 @@ const Canvas: React.FC = () => {
       scale: draggingComponent === 'core' ? 1.2 : 1
     };
     
-    setPlacedComponents([...placedComponents, newComponent]);
+    const newComponents = [...placedComponents, newComponent];
+    setPlacedComponents(newComponents);
     setDraggingComponent(null);
     
     // Show toast notification
@@ -421,8 +553,8 @@ const Canvas: React.FC = () => {
       description: `Successfully placed ${draggingComponent}`
     });
     
-    // Check for completion
-    checkCompletion([...placedComponents, newComponent]);
+    // Check for completion and missing components
+    checkCompletionAndMissing(newComponents);
   };
   
   // Updates indicator position for component placement preview
@@ -430,17 +562,35 @@ const Canvas: React.FC = () => {
     setIndicatorPosition([position.x, position.y, position.z]);
   };
   
-  // Checks if reactor is complete based on required components
-  const checkCompletion = (components) => {
-    const requiredComponents = {
-      'traditional': ['core', 'cooling', 'generator', 'pipe'],
-      'smr': ['core', 'generator', 'pipe']
+  // Checks if reactor is complete based on required components and identifies missing components
+  const checkCompletionAndMissing = (components) => {
+    const requiredComponentsByMode = {
+      'kids': {
+        'traditional': ['core', 'cooling', 'generator', 'pipe'],
+        'smr': ['core', 'generator', 'pipe']
+      },
+      'novice': {
+        'traditional': ['reactor-vessel', 'control-rods', 'coolant-system', 'steam-generator', 'turbine-generator'],
+        'smr': ['reactor-vessel', 'control-rods', 'coolant-system', 'turbine-generator']
+      },
+      'knowledge': {
+        'traditional': ['pressure-vessel', 'fuel-assemblies', 'control-rod-mechanism', 'primary-coolant-loop', 'secondary-loop-system', 'containment-structure'],
+        'smr': ['pressure-vessel', 'fuel-assemblies', 'control-rod-mechanism', 'primary-coolant-loop', 'secondary-loop-system']
+      },
+      'expert': {
+        'traditional': ['pressure-vessel', 'fuel-assemblies', 'control-rod-mechanism', 'primary-coolant-loop', 'secondary-loop-system', 'containment-structure', 'neutron-moderator', 'reactor-instrumentation', 'emergency-cooling'],
+        'smr': ['pressure-vessel', 'fuel-assemblies', 'control-rod-mechanism', 'primary-coolant-loop', 'secondary-loop-system', 'neutron-moderator', 'emergency-cooling']
+      }
     };
     
-    const required = requiredComponents[plantType];
+    const required = requiredComponentsByMode[userMode]?.[plantType] || requiredComponentsByMode['novice'][plantType];
     const placed = components.map(c => c.type);
     
-    const hasAllRequired = required.every(type => placed.includes(type));
+    // Find missing components
+    const missing = required.filter(type => !placed.includes(type));
+    setMissingComponents(missing);
+    
+    const hasAllRequired = missing.length === 0;
     
     if (hasAllRequired && !showCompletionMessage) {
       setShowCompletionMessage(true);
@@ -448,7 +598,7 @@ const Canvas: React.FC = () => {
       toast({
         title: "Reactor Complete!",
         description: `Your ${plantType === 'traditional' ? 'Traditional Reactor' : 'SMR'} is now fully assembled.`,
-        variant: "default" // Changed from "success" to "default"
+        variant: "default"
       });
       
       setTimeout(() => setShowCompletionMessage(false), 5000);
@@ -475,7 +625,8 @@ const Canvas: React.FC = () => {
       scale: draggingComponent === 'core' ? 1.2 : 1
     };
     
-    setPlacedComponents([...placedComponents, newComponent]);
+    const newComponents = [...placedComponents, newComponent];
+    setPlacedComponents(newComponents);
     setDraggingComponent(null);
     
     // Show toast notification
@@ -485,15 +636,45 @@ const Canvas: React.FC = () => {
     });
     
     // Check for completion
-    checkCompletion([...placedComponents, newComponent]);
+    checkCompletionAndMissing(newComponents);
   };
   
   const resetSimulation = () => {
     setPlacedComponents([]);
+    setMissingComponents([]);
+    setShowCompletionMessage(false);
     toast({
       title: "Simulation Reset",
       description: "Start building your reactor from scratch"
     });
+  };
+
+  // Get component display name for UI
+  const getComponentDisplayName = (componentType) => {
+    const componentNames = {
+      'core': 'Reactor Core',
+      'cooling': 'Cooling Tower',
+      'generator': 'Power Generator',
+      'pipe': 'Pipes',
+      'reactor-vessel': 'Reactor Vessel',
+      'control-rods': 'Control Rods',
+      'coolant-system': 'Coolant System',
+      'steam-generator': 'Steam Generator',
+      'turbine-generator': 'Turbine Generator',
+      'pressure-vessel': 'Pressure Vessel',
+      'fuel-assemblies': 'Fuel Assemblies',
+      'control-rod-mechanism': 'Control Rod Mechanism',
+      'primary-coolant-loop': 'Primary Coolant Loop',
+      'secondary-loop-system': 'Secondary Loop System',
+      'containment-structure': 'Containment Structure',
+      'neutron-moderator': 'Neutron Moderator',
+      'reactor-instrumentation': 'Reactor Instrumentation',
+      'emergency-cooling': 'Emergency Cooling System',
+      'fuel-management': 'Fuel Management System',
+      'thermal-exchange': 'Thermal Exchange Network'
+    };
+    
+    return componentNames[componentType] || componentType;
   };
 
   return (
@@ -505,10 +686,10 @@ const Canvas: React.FC = () => {
     >
       {/* Add instructions at the top of the canvas */}
       <div className="absolute top-0 left-0 right-0 z-10 bg-background/80 p-3 text-center border-b border-border">
-        <h3 className="font-medium mb-1">How to Build Your Reactor</h3>
+        <h3 className="font-medium mb-1">Putting Together the Components of Nuclear Energy</h3>
         <p className="text-sm text-muted-foreground">
           1. Drag components from the library on the left
-          2. Drop them onto the canvas
+          2. Drop them onto the canvas to build your reactor like a Lego set
           3. Use mouse to rotate view and scroll to zoom
         </p>
       </div>
@@ -523,7 +704,11 @@ const Canvas: React.FC = () => {
           shadow-mapSize-height={1024}
         />
         
-        <DynamicReactorModel placedComponents={placedComponents} />
+        <DynamicReactorModel 
+          placedComponents={placedComponents} 
+          missingComponents={missingComponents}
+          userMode={userMode}
+        />
         
         <ComponentIndicator 
           position={indicatorPosition} 
@@ -569,12 +754,52 @@ const Canvas: React.FC = () => {
         </div>
       )}
       
-      <button
-        onClick={resetSimulation}
-        className="absolute bottom-4 right-4 bg-primary text-white px-3 py-1 rounded-md text-sm hover:bg-primary/90 transition-colors"
-      >
-        Reset
-      </button>
+      <div className="absolute bottom-4 right-4 flex space-x-2">
+        {missingComponents.length > 0 && (
+          <Button
+            onClick={() => setShowMissingComponentInfo(!showMissingComponentInfo)}
+            variant="outline"
+            size="sm"
+            className="flex items-center"
+          >
+            <Info size={16} className="mr-1" />
+            Missing Components
+          </Button>
+        )}
+        
+        <Button
+          onClick={resetSimulation}
+          size="sm"
+          className="bg-primary text-white hover:bg-primary/90 transition-colors"
+        >
+          Reset
+        </Button>
+      </div>
+      
+      {showMissingComponentInfo && missingComponents.length > 0 && (
+        <div className="absolute top-20 left-8 bg-background/95 p-4 rounded-md border border-border shadow-lg z-20 max-w-xs">
+          <h3 className="font-medium mb-2 text-destructive">Missing Components</h3>
+          <p className="text-xs text-muted-foreground mb-2">
+            Your reactor requires these additional components to function properly:
+          </p>
+          <ul className="text-sm space-y-1 list-disc pl-4">
+            {missingComponents.map((comp, idx) => (
+              <li key={idx}>{getComponentDisplayName(comp)}</li>
+            ))}
+          </ul>
+          <p className="text-xs mt-3 text-muted-foreground">
+            Drag these components from the library to complete your reactor design.
+          </p>
+          <Button 
+            size="sm" 
+            variant="outline" 
+            className="mt-2 w-full"
+            onClick={() => setShowMissingComponentInfo(false)}
+          >
+            Close
+          </Button>
+        </div>
+      )}
       
       {showCompletionMessage && (
         <div className="absolute top-20 left-1/2 transform -translate-x-1/2 bg-green-500/90 text-white p-2 px-4 rounded-md text-sm animate-bounce">

@@ -1,3 +1,4 @@
+
 import React from 'react';
 import { useAppContext } from '../context/AppContext';
 import { motion } from 'framer-motion';
@@ -8,7 +9,12 @@ import {
   Container, 
   Gauge, 
   Zap, 
-  ArrowDownUp 
+  ArrowDownUp,
+  Beaker,
+  Atom,
+  Shield,
+  LayoutGrid,
+  Workflow
 } from 'lucide-react';
 import { cn } from '../lib/utils';
 import { toast } from "@/components/ui/use-toast";
@@ -149,10 +155,49 @@ const ComponentLibrary: React.FC = () => {
       icon: <Gauge size={20} />,
       description: 'Isolated steam generation system for turbine operation.',
       componentType: 'secondary-loop-system'
+    },
+    {
+      name: 'Containment Structure',
+      icon: <Shield size={20} />,
+      description: 'Reinforced building to prevent radiation leakage.',
+      componentType: 'containment-structure'
     }
   ];
 
-  const expertComponents = knowledgeComponents;
+  const expertComponents = [
+    {
+      name: 'Neutron Moderator',
+      icon: <Atom size={20} />,
+      description: 'Slows down neutrons to increase fission probability.',
+      componentType: 'neutron-moderator'
+    },
+    {
+      name: 'Reactor Instrumentation',
+      icon: <Gauge size={20} />,
+      description: 'Advanced monitoring systems for core conditions.',
+      componentType: 'reactor-instrumentation'
+    },
+    {
+      name: 'Emergency Cooling System',
+      icon: <Beaker size={20} />,
+      description: 'Backup system to prevent core meltdown scenarios.',
+      componentType: 'emergency-cooling'
+    },
+    {
+      name: 'Fuel Management System',
+      icon: <LayoutGrid size={20} />,
+      description: 'Controls fuel rod positioning and replacement schedule.',
+      componentType: 'fuel-management'
+    },
+    {
+      name: 'Thermal Exchange Network',
+      icon: <Workflow size={20} />,
+      description: 'Optimized heat transfer pathways between reactor systems.',
+      componentType: 'thermal-exchange'
+    },
+    // Include knowledge components as well for expert level
+    ...knowledgeComponents
+  ];
 
   const getComponentsByMode = () => {
     switch (userMode) {
