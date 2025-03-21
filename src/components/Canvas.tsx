@@ -503,6 +503,16 @@ const Canvas: React.FC = () => {
       onDragOver={handleDragOver}
       onDrop={handleDrop}
     >
+      {/* Add instructions at the top of the canvas */}
+      <div className="absolute top-0 left-0 right-0 z-10 bg-background/80 p-3 text-center border-b border-border">
+        <h3 className="font-medium mb-1">How to Build Your Reactor</h3>
+        <p className="text-sm text-muted-foreground">
+          1. Drag components from the library on the left
+          2. Drop them onto the canvas
+          3. Use mouse to rotate view and scroll to zoom
+        </p>
+      </div>
+      
       <ThreeCanvas shadows camera={{ position: [5, 5, 5], fov: 50 }}>
         <ambientLight intensity={0.5} />
         <directionalLight 
@@ -543,7 +553,7 @@ const Canvas: React.FC = () => {
       )}
       
       {userMode === 'expert' && (
-        <div className="absolute top-2 right-2 bg-background/80 p-2 rounded text-xs space-y-1">
+        <div className="absolute top-20 right-2 bg-background/80 p-2 rounded text-xs space-y-1">
           <div className="flex items-center space-x-2">
             <Box size={12} />
             <span>Use WASD to pan</span>
@@ -567,7 +577,7 @@ const Canvas: React.FC = () => {
       </button>
       
       {showCompletionMessage && (
-        <div className="absolute top-4 left-1/2 transform -translate-x-1/2 bg-green-500/90 text-white p-2 px-4 rounded-md text-sm animate-bounce">
+        <div className="absolute top-20 left-1/2 transform -translate-x-1/2 bg-green-500/90 text-white p-2 px-4 rounded-md text-sm animate-bounce">
           Reactor Complete! 🎉
         </div>
       )}
