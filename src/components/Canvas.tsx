@@ -167,6 +167,176 @@ const MouseInteractionHandler = ({ onPlaceComponent, updatePlacementIndicator })
   return null;
 };
 
+// Advanced component renderers for knowledge and expert modes
+const PressureVessel = ({ position = [0, 0, 0], scale = 1 }) => {
+  return (
+    <group position={[position[0], position[1], position[2]]} scale={scale}>
+      <mesh castShadow>
+        <cylinderGeometry args={[0.7, 0.7, 1.5, 32]} />
+        <meshStandardMaterial color="#2a4365" metalness={0.9} roughness={0.1} />
+      </mesh>
+      <mesh position={[0, 0.85, 0]} castShadow>
+        <cylinderGeometry args={[0.4, 0.4, 0.2, 32]} />
+        <meshStandardMaterial color="#718096" metalness={0.8} roughness={0.2} />
+      </mesh>
+    </group>
+  );
+};
+
+const FuelAssemblies = ({ position = [0, 0, 0], scale = 1 }) => {
+  return (
+    <group position={[position[0], position[1], position[2]]} scale={scale}>
+      <mesh castShadow>
+        <boxGeometry args={[0.8, 1.2, 0.8]} />
+        <meshStandardMaterial color="#f59e0b" metalness={0.3} roughness={0.5} />
+      </mesh>
+      {/* Fuel rods */}
+      {[-0.2, 0, 0.2].map((x, i) => 
+        [-0.2, 0, 0.2].map((z, j) => (
+          <mesh key={`rod-${i}-${j}`} position={[x, 0.1, z]} castShadow>
+            <cylinderGeometry args={[0.05, 0.05, 1.4, 12]} />
+            <meshStandardMaterial color="#d97706" metalness={0.5} roughness={0.4} />
+          </mesh>
+        ))
+      )}
+    </group>
+  );
+};
+
+const ControlRodMechanism = ({ position = [0, 0, 0], scale = 1 }) => {
+  return (
+    <group position={[position[0], position[1], position[2]]} scale={scale}>
+      <mesh castShadow>
+        <boxGeometry args={[1, 0.3, 1]} />
+        <meshStandardMaterial color="#6b7280" metalness={0.7} roughness={0.3} />
+      </mesh>
+      {/* Control rods */}
+      {[-0.3, 0, 0.3].map((x, i) => (
+        <mesh key={`control-rod-${i}`} position={[x, -0.6, 0]} castShadow>
+          <cylinderGeometry args={[0.07, 0.07, 1.2, 12]} />
+          <meshStandardMaterial color="#374151" metalness={0.6} roughness={0.3} />
+        </mesh>
+      ))}
+      <mesh position={[0.4, 0.2, 0]} castShadow>
+        <boxGeometry args={[0.2, 0.2, 0.2]} />
+        <meshStandardMaterial color="#4b5563" metalness={0.5} roughness={0.4} />
+      </mesh>
+    </group>
+  );
+};
+
+const PrimaryCoolantLoop = ({ position = [0, 0, 0], scale = 1 }) => {
+  return (
+    <group position={[position[0], position[1], position[2]]} scale={scale}>
+      {/* Main pipes */}
+      <mesh position={[0, 0, 0]} castShadow>
+        <torusGeometry args={[0.6, 0.1, 16, 100, Math.PI * 2]} />
+        <meshStandardMaterial color="#0284c7" metalness={0.6} roughness={0.3} />
+      </mesh>
+      <mesh position={[0, -0.4, 0]} castShadow>
+        <cylinderGeometry args={[0.15, 0.15, 0.8, 16]} />
+        <meshStandardMaterial color="#0284c7" metalness={0.6} roughness={0.3} />
+      </mesh>
+    </group>
+  );
+};
+
+const SecondaryLoopSystem = ({ position = [0, 0, 0], scale = 1 }) => {
+  return (
+    <group position={[position[0], position[1], position[2]]} scale={scale}>
+      {/* Heat exchanger */}
+      <mesh position={[0, 0, 0]} castShadow>
+        <boxGeometry args={[1.2, 0.7, 0.7]} />
+        <meshStandardMaterial color="#64748b" metalness={0.5} roughness={0.5} />
+      </mesh>
+      {/* Pipes */}
+      <mesh position={[0.7, 0.3, 0]} castShadow>
+        <cylinderGeometry args={[0.1, 0.1, 0.6, 16]} />
+        <meshStandardMaterial color="#94a3b8" metalness={0.6} roughness={0.4} />
+      </mesh>
+      <mesh position={[-0.7, 0.3, 0]} castShadow>
+        <cylinderGeometry args={[0.1, 0.1, 0.6, 16]} />
+        <meshStandardMaterial color="#94a3b8" metalness={0.6} roughness={0.4} />
+      </mesh>
+    </group>
+  );
+};
+
+// For novice components
+const ReactorVessel = ({ position = [0, 0, 0], scale = 1 }) => {
+  return (
+    <group position={[position[0], position[1], position[2]]} scale={scale}>
+      <mesh castShadow>
+        <cylinderGeometry args={[0.65, 0.65, 1.3, 32]} />
+        <meshStandardMaterial color="#475569" metalness={0.7} roughness={0.3} />
+      </mesh>
+    </group>
+  );
+};
+
+const ControlRods = ({ position = [0, 0, 0], scale = 1 }) => {
+  return (
+    <group position={[position[0], position[1], position[2]]} scale={scale}>
+      <mesh position={[0, 0.2, 0]} castShadow>
+        <boxGeometry args={[0.9, 0.2, 0.9]} />
+        <meshStandardMaterial color="#64748b" metalness={0.6} roughness={0.3} />
+      </mesh>
+      {/* Rods */}
+      {[-0.25, 0, 0.25].map((x, i) => (
+        <mesh key={`rod-${i}`} position={[x, -0.4, 0]} castShadow>
+          <cylinderGeometry args={[0.06, 0.06, 1, 12]} />
+          <meshStandardMaterial color="#1e293b" metalness={0.7} roughness={0.3} />
+        </mesh>
+      ))}
+    </group>
+  );
+};
+
+const CoolantSystem = ({ position = [0, 0, 0], scale = 1 }) => {
+  return (
+    <group position={[position[0], position[1], position[2]]} scale={scale}>
+      <mesh castShadow>
+        <cylinderGeometry args={[0.4, 0.4, 0.8, 24]} />
+        <meshStandardMaterial color="#0ea5e9" metalness={0.5} roughness={0.4} />
+      </mesh>
+      <mesh position={[0.5, 0, 0]} rotation={[0, 0, Math.PI / 2]} castShadow>
+        <cylinderGeometry args={[0.1, 0.1, 0.6, 16]} />
+        <meshStandardMaterial color="#0ea5e9" metalness={0.5} roughness={0.4} />
+      </mesh>
+    </group>
+  );
+};
+
+const SteamGenerator = ({ position = [0, 0, 0], scale = 1 }) => {
+  return (
+    <group position={[position[0], position[1], position[2]]} scale={scale}>
+      <mesh castShadow>
+        <cylinderGeometry args={[0.5, 0.5, 1.2, 24]} />
+        <meshStandardMaterial color="#94a3b8" metalness={0.6} roughness={0.3} />
+      </mesh>
+      <mesh position={[0, 0.7, 0]} castShadow>
+        <cylinderGeometry args={[0.2, 0.3, 0.2, 24]} />
+        <meshStandardMaterial color="#64748b" metalness={0.7} roughness={0.2} />
+      </mesh>
+    </group>
+  );
+};
+
+const TurbineGenerator = ({ position = [0, 0, 0], scale = 1 }) => {
+  return (
+    <group position={[position[0], position[1], position[2]]} scale={scale}>
+      <mesh castShadow>
+        <boxGeometry args={[1.4, 0.6, 0.7]} />
+        <meshStandardMaterial color="#334155" metalness={0.7} roughness={0.3} />
+      </mesh>
+      <mesh position={[0.8, 0.4, 0]} rotation={[Math.PI / 2, 0, 0]} castShadow>
+        <cylinderGeometry args={[0.2, 0.2, 0.5, 24]} />
+        <meshStandardMaterial color="#1e293b" metalness={0.8} roughness={0.2} />
+      </mesh>
+    </group>
+  );
+};
+
 // Dynamic reactor model based on placed components
 const DynamicReactorModel = ({ placedComponents }) => {
   return (
@@ -177,6 +347,7 @@ const DynamicReactorModel = ({ placedComponents }) => {
         const { type, position, scale } = component;
         
         switch (type) {
+          // Kids components
           case 'core':
             return <ReactorCore key={index} position={position} scale={scale || 1} />;
           case 'cooling':
@@ -184,15 +355,39 @@ const DynamicReactorModel = ({ placedComponents }) => {
           case 'generator':
             return <PowerGenerator key={index} position={position} scale={scale || 1} />;
           case 'pipe':
-            // For simplicity, pipes are placed as single points
-            // In a more complex implementation, you would connect them between components
             return (
               <mesh key={index} position={position} castShadow>
                 <cylinderGeometry args={[0.1, 0.1, 0.5, 12]} />
                 <meshStandardMaterial color="#94a3b8" metalness={0.7} roughness={0.3} />
               </mesh>
             );
+            
+          // Novice components
+          case 'reactor-vessel':
+            return <ReactorVessel key={index} position={position} scale={scale || 1} />;
+          case 'control-rods':
+            return <ControlRods key={index} position={position} scale={scale || 1} />;
+          case 'coolant-system':
+            return <CoolantSystem key={index} position={position} scale={scale || 1} />;
+          case 'steam-generator':
+            return <SteamGenerator key={index} position={position} scale={scale || 1} />;
+          case 'turbine-generator':
+            return <TurbineGenerator key={index} position={position} scale={scale || 1} />;
+            
+          // Knowledge/Expert components
+          case 'pressure-vessel':
+            return <PressureVessel key={index} position={position} scale={scale || 1} />;
+          case 'fuel-assemblies':
+            return <FuelAssemblies key={index} position={position} scale={scale || 1} />;
+          case 'control-rod-mechanism':
+            return <ControlRodMechanism key={index} position={position} scale={scale || 1} />;
+          case 'primary-coolant-loop':
+            return <PrimaryCoolantLoop key={index} position={position} scale={scale || 1} />;
+          case 'secondary-loop-system':
+            return <SecondaryLoopSystem key={index} position={position} scale={scale || 1} />;
+            
           default:
+            console.log("Unknown component type:", type);
             return null;
         }
       })}
