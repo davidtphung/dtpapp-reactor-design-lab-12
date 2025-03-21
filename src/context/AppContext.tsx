@@ -17,6 +17,8 @@ interface AppContextType {
   runSimulation: () => void;
   draggingComponent: string | null;
   setDraggingComponent: (component: string | null) => void;
+  missingComponents: string[];
+  updateMissingComponents: (components: string[]) => void;
 }
 
 interface SimulationResults {
@@ -43,6 +45,8 @@ const defaultContextValue: AppContextType = {
   runSimulation: () => {},
   draggingComponent: null,
   setDraggingComponent: () => {},
+  missingComponents: [],
+  updateMissingComponents: () => {},
 };
 
 const AppContext = createContext<AppContextType>(defaultContextValue);
@@ -56,6 +60,7 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
   const [isSimulating, setIsSimulating] = useState(false);
   const [simulationResults, setSimulationResults] = useState<SimulationResults | null>(null);
   const [draggingComponent, setDraggingComponent] = useState<string | null>(null);
+  const [missingComponents, setMissingComponents] = useState<string[]>([]);
 
   useEffect(() => {
     // Check local storage or system preference for theme
@@ -94,7 +99,14 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
     localStorage.setItem('userMode', mode);
   };
 
+  const updateMissingComponents = (components: string[]) => {
+    setMissingComponents(components);
+  };
+
   const runSimulation = () => {
+    // Don't run simulation if components are missing
+    if (missingComponents.length > 0) return;
+    
     setIsSimulating(true);
     
     // Simulate a delay to make it feel like computation is happening
@@ -129,6 +141,8 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
     runSimulation,
     draggingComponent,
     setDraggingComponent,
+    missingComponents,
+    updateMissingComponents,
   };
 
   return (
