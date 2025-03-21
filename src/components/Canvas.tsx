@@ -526,7 +526,7 @@ const DynamicReactorModel = ({ placedComponents, missingComponents, userMode }) 
 
 const Canvas: React.FC = () => {
   const canvasRef = useRef<HTMLDivElement>(null);
-  const { userMode, plantType, draggingComponent, setDraggingComponent, updateMissingComponents } = useAppContext();
+  const { userMode, plantType, draggingComponent, setDraggingComponent } = useAppContext();
   const [indicatorPosition, setIndicatorPosition] = useState([0, 0, 0]);
   const [placedComponents, setPlacedComponents] = useState([]);
   const [showCompletionMessage, setShowCompletionMessage] = useState(false);
@@ -589,9 +589,6 @@ const Canvas: React.FC = () => {
     // Find missing components
     const missing = required.filter(type => !placed.includes(type));
     setMissingComponents(missing);
-    
-    // Update the context with missing components
-    updateMissingComponents(missing);
     
     const hasAllRequired = missing.length === 0;
     
@@ -690,9 +687,9 @@ const Canvas: React.FC = () => {
       {/* Add instructions at the top of the canvas */}
       <div className="absolute top-0 left-0 right-0 z-10 bg-background/80 p-3 text-center border-b border-border">
         <h3 className="font-medium mb-1">Putting Together the Components of Nuclear Energy</h3>
-        <p className="text-sm text-muted-foreground whitespace-nowrap">
-          1. Drag components from the library on the left &nbsp;
-          2. Drop them onto the canvas to build your reactor like a Lego set &nbsp;
+        <p className="text-sm text-muted-foreground">
+          1. Drag components from the library on the left
+          2. Drop them onto the canvas to build your reactor like a Lego set
           3. Use mouse to rotate view and scroll to zoom
         </p>
       </div>

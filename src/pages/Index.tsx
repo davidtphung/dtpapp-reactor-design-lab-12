@@ -9,7 +9,7 @@ import Footer from '../components/Footer';
 import Canvas from '../components/Canvas';
 import ComponentLibrary from '../components/ComponentLibrary';
 import SimulationDashboard from '../components/SimulationDashboard';
-import { ArrowRight, Atom, Loader2, Clock } from 'lucide-react';
+import { ArrowRight, Atom, Loader2, RotateCw } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { motion } from 'framer-motion';
 
@@ -122,25 +122,24 @@ const MainApp: React.FC = () => {
       <main className="flex-1 container mx-auto py-8 px-4">
         <div className="grid gap-8">
           <section className="mb-8">
-            <div className="flex flex-wrap gap-6 items-center">
-              <RadioGroup 
-                defaultValue="traditional" 
-                className="flex"
-                onValueChange={(value) => setPlantType(value as 'traditional')}
-              >
-                <div className="flex items-center space-x-2">
-                  <RadioGroupItem value="traditional" id="traditional" />
-                  <Label htmlFor="traditional" className="cursor-pointer">
-                    Traditional Nuclear Power Plant
-                  </Label>
-                </div>
-              </RadioGroup>
-              
-              <div className="flex items-center space-x-2 text-muted-foreground">
-                <Clock className="h-4 w-4" />
-                <span className="text-sm font-medium">Small Modular Reactor (SMR) - Coming Soon</span>
+            <RadioGroup 
+              defaultValue="traditional" 
+              className="flex flex-wrap gap-4"
+              onValueChange={(value) => setPlantType(value as 'traditional' | 'smr')}
+            >
+              <div className="flex items-center space-x-2">
+                <RadioGroupItem value="traditional" id="traditional" />
+                <Label htmlFor="traditional" className="cursor-pointer">
+                  Traditional Nuclear Power Plant
+                </Label>
               </div>
-            </div>
+              <div className="flex items-center space-x-2">
+                <RadioGroupItem value="smr" id="smr" />
+                <Label htmlFor="smr" className="cursor-pointer">
+                  Small Modular Reactor (SMR)
+                </Label>
+              </div>
+            </RadioGroup>
           </section>
           
           <section className="grid grid-cols-1 lg:grid-cols-12 gap-6">
@@ -150,11 +149,6 @@ const MainApp: React.FC = () => {
             
             <div className="lg:col-span-5">
               <Canvas />
-              <div className="mt-3 text-sm text-center text-muted-foreground">
-                <p>1. Drag components from the library on the left<br />
-                2. Drop them onto the canvas to build your reactor like a Lego set<br />
-                3. Use mouse to rotate view and scroll to zoom</p>
-              </div>
             </div>
             
             <div className="lg:col-span-4">
