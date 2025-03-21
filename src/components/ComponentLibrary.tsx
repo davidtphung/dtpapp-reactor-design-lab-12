@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { useAppContext } from '../context/AppContext';
 import { motion } from 'framer-motion';
@@ -12,20 +11,31 @@ import {
   ArrowDownUp 
 } from 'lucide-react';
 import { cn } from '../lib/utils';
+import { toast } from "@/components/ui/use-toast";
 
 interface ComponentItemProps {
   name: string;
   icon: React.ReactNode;
   description: string;
+  componentType: string;
+  onDragStart: (componentType: string) => void;
 }
 
-const ComponentItem: React.FC<ComponentItemProps> = ({ name, icon, description }) => {
+const ComponentItem: React.FC<ComponentItemProps> = ({ 
+  name, 
+  icon, 
+  description, 
+  componentType,
+  onDragStart 
+}) => {
   return (
     <motion.div
       initial={{ opacity: 0, y: 10 }}
       animate={{ opacity: 1, y: 0 }}
       whileHover={{ scale: 1.02 }}
-      className="glass-card p-4 cursor-pointer hover:border-primary/30 transition-all duration-300"
+      className="glass-card p-4 cursor-grab hover:border-primary/30 transition-all duration-300"
+      draggable
+      onDragStart={() => onDragStart(componentType)}
     >
       <div className="flex items-center mb-2">
         <div className="mr-3 text-primary">
@@ -39,23 +49,40 @@ const ComponentItem: React.FC<ComponentItemProps> = ({ name, icon, description }
 };
 
 const ComponentLibrary: React.FC = () => {
-  const { userMode } = useAppContext();
+  const { userMode, setDraggingComponent } = useAppContext();
+
+  const handleDragStart = (componentType: string) => {
+    setDraggingComponent(componentType);
+    toast({
+      title: "Component Selected",
+      description: `Drag the ${componentType} to a valid location on the canvas`,
+    });
+  };
 
   const kidsComponents = [
     {
       name: 'Reactor Core',
       icon: <SquareStack size={20} />,
-      description: 'The heart of the nuclear plant where energy is made.'
+      description: 'The heart of the nuclear plant where energy is made.',
+      componentType: 'core'
     },
     {
       name: 'Cooling Tower',
       icon: <Cylinder size={20} />,
-      description: 'Keeps the reactor from getting too hot.'
+      description: 'Keeps the reactor from getting too hot.',
+      componentType: 'cooling'
     },
     {
       name: 'Power Generator',
       icon: <Zap size={20} />,
-      description: 'Makes electricity from heat energy.'
+      description: 'Makes electricity from heat energy.',
+      componentType: 'generator'
+    },
+    {
+      name: 'Pipes',
+      icon: <Pipette size={20} />,
+      description: 'Connects parts of the reactor together.',
+      componentType: 'pipe'
     }
   ];
 
@@ -63,27 +90,32 @@ const ComponentLibrary: React.FC = () => {
     {
       name: 'Reactor Vessel',
       icon: <Container size={20} />,
-      description: 'Contains the nuclear fuel and controls the reaction.'
+      description: 'Contains the nuclear fuel and controls the reaction.',
+      componentType: 'reactor-vessel'
     },
     {
       name: 'Control Rods',
       icon: <ArrowDownUp size={20} />,
-      description: 'Adjust the rate of the nuclear reaction.'
+      description: 'Adjust the rate of the nuclear reaction.',
+      componentType: 'control-rods'
     },
     {
       name: 'Coolant System',
       icon: <Pipette size={20} />,
-      description: 'Transfers heat from the reactor core.'
+      description: 'Transfers heat from the reactor core.',
+      componentType: 'coolant-system'
     },
     {
       name: 'Steam Generator',
       icon: <Gauge size={20} />,
-      description: 'Converts water to steam for the turbine.'
+      description: 'Converts water to steam for the turbine.',
+      componentType: 'steam-generator'
     },
     {
       name: 'Turbine Generator',
       icon: <Zap size={20} />,
-      description: 'Transforms steam energy into electrical power.'
+      description: 'Transforms steam energy into electrical power.',
+      componentType: 'turbine-generator'
     }
   ];
 
@@ -91,27 +123,32 @@ const ComponentLibrary: React.FC = () => {
     {
       name: 'Pressure Vessel',
       icon: <Container size={20} />,
-      description: 'High-strength container for the reactor core operating at 15-17 MPa.'
+      description: 'High-strength container for the reactor core operating at 15-17 MPa.',
+      componentType: 'pressure-vessel'
     },
     {
       name: 'Fuel Assemblies',
       icon: <SquareStack size={20} />,
-      description: 'Arranged UO2 fuel pellets in zirconium alloy tubes.'
+      description: 'Arranged UO2 fuel pellets in zirconium alloy tubes.',
+      componentType: 'fuel-assemblies'
     },
     {
       name: 'Control Rod Mechanism',
       icon: <ArrowDownUp size={20} />,
-      description: 'Precision system for neutron absorption and reaction control.'
+      description: 'Precision system for neutron absorption and reaction control.',
+      componentType: 'control-rod-mechanism'
     },
     {
       name: 'Primary Coolant Loop',
       icon: <Pipette size={20} />,
-      description: 'Circulates pressurized water to transfer thermal energy.'
+      description: 'Circulates pressurized water to transfer thermal energy.',
+      componentType: 'primary-coolant-loop'
     },
     {
       name: 'Secondary Loop System',
       icon: <Gauge size={20} />,
-      description: 'Isolated steam generation system for turbine operation.'
+      description: 'Isolated steam generation system for turbine operation.',
+      componentType: 'secondary-loop-system'
     }
   ];
 
@@ -148,6 +185,8 @@ const ComponentLibrary: React.FC = () => {
             name={component.name}
             icon={component.icon}
             description={component.description}
+            componentType={component.componentType || component.name.toLowerCase().replace(' ', '-')}
+            onDragStart={handleDragStart}
           />
         ))}
       </div>

@@ -1,9 +1,11 @@
 
-import React, { useRef, useState } from 'react';
+import React, { useRef, useState, useEffect } from 'react';
 import { useAppContext } from '../context/AppContext';
-import { Canvas as ThreeCanvas } from '@react-three/fiber';
-import { OrbitControls, PerspectiveCamera, useGLTF, Environment } from '@react-three/drei';
+import { Canvas as ThreeCanvas, useThree } from '@react-three/fiber';
+import { OrbitControls, PerspectiveCamera, Environment } from '@react-three/drei';
 import { Cylinder, Box, CircleIcon } from 'lucide-react';
+import { Vector3 } from 'three';
+import { toast } from "@/components/ui/use-toast";
 
 // Component to represent a reactor core
 const ReactorCore = ({ position = [0, 0, 0], scale = 1 }) => {
@@ -93,70 +95,219 @@ const Floor = () => {
   );
 };
 
-// Traditional Reactor Model
-const TraditionalReactor = () => {
-  return (
-    <group>
-      <ReactorCore position={[0, 0, 0]} scale={1.5} />
-      <CoolingTower position={[-2, 0, -1]} scale={1.5} />
-      <CoolingTower position={[-2, 0, 1]} scale={1.5} />
-      <PowerGenerator position={[2, -0.5, 0]} scale={1} />
-      <Pipe start={[0.5, 0, 0]} end={[1.8, 0, 0]} />
-      <Pipe start={[-0.5, 0, 0]} end={[-1.7, 0, -1]} />
-      <Pipe start={[-0.5, 0, 0]} end={[-1.7, 0, 1]} />
-      <Floor />
-    </group>
-  );
-};
-
-// SMR Reactor Model
-const SmrReactor = () => {
-  return (
-    <group>
-      <ReactorCore position={[0, 0, 0]} scale={1} />
-      <CoolingTower position={[-1.5, 0, 0]} scale={1} />
-      <PowerGenerator position={[1.5, -0.5, 0]} scale={0.8} />
-      <Pipe start={[0.4, 0, 0]} end={[1.3, 0, 0]} />
-      <Pipe start={[-0.4, 0, 0]} end={[-1.3, 0, 0]} />
-      <Floor />
-    </group>
-  );
-};
-
-// Main component selector based on plant type
-const ReactorModel = () => {
-  const { plantType } = useAppContext();
-  
-  return plantType === 'traditional' ? <TraditionalReactor /> : <SmrReactor />;
-};
-
 // Component selection indicator for dragging
 const ComponentIndicator = ({ position, visible, component }) => {
   if (!visible) return null;
   
+  let indicatorColor = "#10b981"; // Default green
+  
+  // Change color based on whether position is valid for placement
+  const isValidPosition = true; // This would be determined by your placement rules
+  if (!isValidPosition) {
+    indicatorColor = "#ef4444"; // Red for invalid positions
+  }
+  
   return (
     <mesh position={position} scale={[0.5, 0.5, 0.5]}>
-      <sphereGeometry args={[0.2, 16, 16]} />
-      <meshStandardMaterial color="#10b981" transparent opacity={0.7} />
+      <sphereGeometry args={[0.3, 16, 16]} />
+      <meshStandardMaterial color={indicatorColor} transparent opacity={0.7} />
     </mesh>
+  );
+};
+
+// Component to capture mouse interactions with the scene
+const MouseInteractionHandler = ({ onPlaceComponent, updatePlacementIndicator }) => {
+  const { raycaster, camera, mouse, scene } = useThree();
+  
+  useEffect(() => {
+    const handleMouseMove = () => {
+      raycaster.setFromCamera(mouse, camera);
+      const intersects = raycaster.intersectObjects(scene.children, true);
+      
+      if (intersects.length > 0) {
+        // Find the floor intersection
+        const floorIntersection = intersects.find(
+          intersect => intersect.object.rotation && 
+          intersect.object.rotation.x === -Math.PI / 2
+        );
+        
+        if (floorIntersection) {
+          updatePlacementIndicator(floorIntersection.point);
+        }
+      }
+    };
+    
+    handleMouseMove();
+    
+    window.addEventListener('mousemove', handleMouseMove);
+    return () => window.removeEventListener('mousemove', handleMouseMove);
+  }, [raycaster, camera, mouse, scene, updatePlacementIndicator]);
+  
+  useEffect(() => {
+    const handleClick = () => {
+      raycaster.setFromCamera(mouse, camera);
+      const intersects = raycaster.intersectObjects(scene.children, true);
+      
+      if (intersects.length > 0) {
+        // Find the floor intersection
+        const floorIntersection = intersects.find(
+          intersect => intersect.object.rotation && 
+          intersect.object.rotation.x === -Math.PI / 2
+        );
+        
+        if (floorIntersection) {
+          onPlaceComponent(floorIntersection.point);
+        }
+      }
+    };
+    
+    window.addEventListener('click', handleClick);
+    return () => window.removeEventListener('click', handleClick);
+  }, [raycaster, camera, mouse, scene, onPlaceComponent]);
+  
+  return null;
+};
+
+// Dynamic reactor model based on placed components
+const DynamicReactorModel = ({ placedComponents }) => {
+  return (
+    <group>
+      <Floor />
+      
+      {placedComponents.map((component, index) => {
+        const { type, position, scale } = component;
+        
+        switch (type) {
+          case 'core':
+            return <ReactorCore key={index} position={position} scale={scale || 1} />;
+          case 'cooling':
+            return <CoolingTower key={index} position={position} scale={scale || 1} />;
+          case 'generator':
+            return <PowerGenerator key={index} position={position} scale={scale || 1} />;
+          case 'pipe':
+            // For simplicity, pipes are placed as single points
+            // In a more complex implementation, you would connect them between components
+            return (
+              <mesh key={index} position={position} castShadow>
+                <cylinderGeometry args={[0.1, 0.1, 0.5, 12]} />
+                <meshStandardMaterial color="#94a3b8" metalness={0.7} roughness={0.3} />
+              </mesh>
+            );
+          default:
+            return null;
+        }
+      })}
+    </group>
   );
 };
 
 const Canvas: React.FC = () => {
   const canvasRef = useRef<HTMLDivElement>(null);
-  const { userMode, plantType } = useAppContext();
-  const [draggingComponent, setDraggingComponent] = useState(null);
-  const [dragPosition, setDragPosition] = useState([0, 0, 0]);
+  const { userMode, plantType, draggingComponent, setDraggingComponent } = useAppContext();
+  const [indicatorPosition, setIndicatorPosition] = useState([0, 0, 0]);
+  const [placedComponents, setPlacedComponents] = useState([]);
+  const [showCompletionMessage, setShowCompletionMessage] = useState(false);
 
-  const handleCanvasClick = (event) => {
-    console.log('Canvas clicked', event.point);
-    // Here you would handle placement of components
+  // Handles component placement
+  const handlePlaceComponent = (position) => {
+    if (!draggingComponent) return;
+    
+    const newComponent = {
+      type: draggingComponent,
+      position: [position.x, position.y, position.z],
+      scale: draggingComponent === 'core' ? 1.2 : 1
+    };
+    
+    setPlacedComponents([...placedComponents, newComponent]);
+    setDraggingComponent(null);
+    
+    // Show toast notification
+    toast({
+      title: "Component Placed",
+      description: `Successfully placed ${draggingComponent}`
+    });
+    
+    // Check for completion
+    checkCompletion([...placedComponents, newComponent]);
+  };
+  
+  // Updates indicator position for component placement preview
+  const updatePlacementIndicator = (position) => {
+    setIndicatorPosition([position.x, position.y, position.z]);
+  };
+  
+  // Checks if reactor is complete based on required components
+  const checkCompletion = (components) => {
+    const requiredComponents = {
+      'traditional': ['core', 'cooling', 'generator', 'pipe'],
+      'smr': ['core', 'generator', 'pipe']
+    };
+    
+    const required = requiredComponents[plantType];
+    const placed = components.map(c => c.type);
+    
+    const hasAllRequired = required.every(type => placed.includes(type));
+    
+    if (hasAllRequired && !showCompletionMessage) {
+      setShowCompletionMessage(true);
+      
+      toast({
+        title: "Reactor Complete!",
+        description: `Your ${plantType === 'traditional' ? 'Traditional Reactor' : 'SMR'} is now fully assembled.`,
+        variant: "success"
+      });
+      
+      setTimeout(() => setShowCompletionMessage(false), 5000);
+    }
+  };
+  
+  // Handle canvas drag events for component placement
+  const handleDragOver = (e) => {
+    e.preventDefault();
+  };
+  
+  const handleDrop = (e) => {
+    e.preventDefault();
+    if (!draggingComponent) return;
+    
+    const canvasRect = canvasRef.current.getBoundingClientRect();
+    const x = ((e.clientX - canvasRect.left) / canvasRect.width) * 2 - 1;
+    const y = -((e.clientY - canvasRect.top) / canvasRect.height) * 2 + 1;
+    
+    // Simple placement - in a real app, you would raytrace to find 3D position
+    const newComponent = {
+      type: draggingComponent,
+      position: [x * 3, 0, y * 3],
+      scale: draggingComponent === 'core' ? 1.2 : 1
+    };
+    
+    setPlacedComponents([...placedComponents, newComponent]);
+    setDraggingComponent(null);
+    
+    // Show toast notification
+    toast({
+      title: "Component Placed",
+      description: `Successfully placed ${draggingComponent}`
+    });
+    
+    // Check for completion
+    checkCompletion([...placedComponents, newComponent]);
+  };
+  
+  const resetSimulation = () => {
+    setPlacedComponents([]);
+    toast({
+      title: "Simulation Reset",
+      description: "Start building your reactor from scratch"
+    });
   };
 
   return (
     <div 
       ref={canvasRef} 
       className="relative w-full h-full min-h-[400px] rounded-lg bg-secondary/30 border border-border transition-all duration-500 overflow-hidden"
+      onDragOver={handleDragOver}
+      onDrop={handleDrop}
     >
       <ThreeCanvas shadows camera={{ position: [5, 5, 5], fov: 50 }}>
         <ambientLight intensity={0.5} />
@@ -167,12 +318,20 @@ const Canvas: React.FC = () => {
           shadow-mapSize-width={1024} 
           shadow-mapSize-height={1024}
         />
-        <ReactorModel />
+        
+        <DynamicReactorModel placedComponents={placedComponents} />
+        
         <ComponentIndicator 
-          position={dragPosition} 
+          position={indicatorPosition} 
           visible={draggingComponent !== null}
           component={draggingComponent} 
         />
+        
+        <MouseInteractionHandler 
+          onPlaceComponent={handlePlaceComponent}
+          updatePlacementIndicator={updatePlacementIndicator}
+        />
+        
         <OrbitControls 
           enablePan={true}
           enableZoom={true}
@@ -203,6 +362,19 @@ const Canvas: React.FC = () => {
             <CircleIcon size={12} />
             <span>Drag to rotate</span>
           </div>
+        </div>
+      )}
+      
+      <button
+        onClick={resetSimulation}
+        className="absolute bottom-4 right-4 bg-primary text-white px-3 py-1 rounded-md text-sm hover:bg-primary/90 transition-colors"
+      >
+        Reset
+      </button>
+      
+      {showCompletionMessage && (
+        <div className="absolute top-4 left-1/2 transform -translate-x-1/2 bg-green-500/90 text-white p-2 px-4 rounded-md text-sm animate-bounce">
+          Reactor Complete! 🎉
         </div>
       )}
     </div>

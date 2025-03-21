@@ -1,4 +1,3 @@
-
 import React, { createContext, useContext, useState, useEffect } from 'react';
 
 type UserMode = 'kids' | 'novice' | 'knowledge' | 'expert';
@@ -15,6 +14,8 @@ interface AppContextType {
   setIsSimulating: (value: boolean) => void;
   simulationResults: SimulationResults | null;
   runSimulation: () => void;
+  draggingComponent: string | null;
+  setDraggingComponent: (component: string | null) => void;
 }
 
 interface SimulationResults {
@@ -39,6 +40,8 @@ const defaultContextValue: AppContextType = {
   setIsSimulating: () => {},
   simulationResults: null,
   runSimulation: () => {},
+  draggingComponent: null,
+  setDraggingComponent: () => {},
 };
 
 const AppContext = createContext<AppContextType>(defaultContextValue);
@@ -51,6 +54,7 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
   const [plantType, setPlantType] = useState<PlantType>('traditional');
   const [isSimulating, setIsSimulating] = useState(false);
   const [simulationResults, setSimulationResults] = useState<SimulationResults | null>(null);
+  const [draggingComponent, setDraggingComponent] = useState<string | null>(null);
 
   useEffect(() => {
     // Check local storage or system preference for theme
@@ -122,6 +126,8 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
     setIsSimulating,
     simulationResults,
     runSimulation,
+    draggingComponent,
+    setDraggingComponent,
   };
 
   return (
