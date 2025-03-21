@@ -3,7 +3,7 @@ import React, { useRef, useState } from 'react';
 import { useAppContext } from '../context/AppContext';
 import { Canvas as ThreeCanvas } from '@react-three/fiber';
 import { OrbitControls, PerspectiveCamera, useGLTF, Environment } from '@react-three/drei';
-import { Cylinder, Box, Sphere } from 'lucide-react';
+import { Cylinder, Box, CircleIcon } from 'lucide-react';
 
 // Component to represent a reactor core
 const ReactorCore = ({ position = [0, 0, 0], scale = 1 }) => {
@@ -76,7 +76,7 @@ const PowerGenerator = ({ position = [0, 0, 0], scale = 1 }) => {
         <meshStandardMaterial color="#475569" metalness={0.6} roughness={0.4} />
       </mesh>
       <mesh position={[0.7, 0.5, 0]} castShadow>
-        <cylinderGeometry args={[0.2, 0.2, 0.6, 16]} rotation={[0, 0, Math.PI/2]} />
+        <cylinderGeometry args={[0.2, 0.2, 0.6, 16]} />
         <meshStandardMaterial color="#334155" metalness={0.7} roughness={0.3} />
       </mesh>
     </group>
@@ -200,7 +200,7 @@ const Canvas: React.FC = () => {
             <span>Scroll to zoom</span>
           </div>
           <div className="flex items-center space-x-2">
-            <Sphere size={12} />
+            <CircleIcon size={12} />
             <span>Drag to rotate</span>
           </div>
         </div>
