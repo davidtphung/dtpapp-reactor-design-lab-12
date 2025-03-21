@@ -8,6 +8,7 @@ import {
   CommandGroup,
   CommandInput,
   CommandItem,
+  CommandList,
 } from './ui/command';
 import {
   Popover,
@@ -46,27 +47,29 @@ const ModeSelector: React.FC = () => {
       <PopoverContent className="w-48 p-0">
         <Command>
           <CommandInput placeholder="Search mode..." />
-          <CommandEmpty>No mode found.</CommandEmpty>
-          <CommandGroup>
-            {modes.map((mode) => (
-              <CommandItem
-                key={mode.value}
-                value={mode.value}
-                onSelect={() => {
-                  setUserMode(mode.value as any);
-                  setOpen(false);
-                }}
-              >
-                <Check
-                  className={cn(
-                    "mr-2 h-4 w-4",
-                    userMode === mode.value ? "opacity-100" : "opacity-0"
-                  )}
-                />
-                {mode.label}
-              </CommandItem>
-            ))}
-          </CommandGroup>
+          <CommandList>
+            <CommandEmpty>No mode found.</CommandEmpty>
+            <CommandGroup>
+              {modes.map((mode) => (
+                <CommandItem
+                  key={mode.value}
+                  value={mode.value}
+                  onSelect={() => {
+                    setUserMode(mode.value as any);
+                    setOpen(false);
+                  }}
+                >
+                  <Check
+                    className={cn(
+                      "mr-2 h-4 w-4",
+                      userMode === mode.value ? "opacity-100" : "opacity-0"
+                    )}
+                  />
+                  {mode.label}
+                </CommandItem>
+              ))}
+            </CommandGroup>
+          </CommandList>
         </Command>
       </PopoverContent>
     </Popover>
